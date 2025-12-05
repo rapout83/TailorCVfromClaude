@@ -22,7 +22,23 @@ import argparse
 from pathlib import Path
 from cv_generator import CVParser, CVValidator
 from docx_populator import DOCXPopulator
-from pdf_generator_v2 import docx_to_pdf_via_html
+
+# Try to import PDF generator (may fail on Windows without GTK)
+try:
+    from pdf_generator_v2 import docx_to_pdf_via_html
+    PDF_AVAILABLE = True
+    PDF_METHOD = "weasyprint"
+except (ImportError, OSError) as e:
+    PDF_AVAILABLE = False
+    PDF_ERROR = str(e)
+
+    # Try Windows alternative
+    try:
+        from pdf_generator_windows import docx_to_pdf_windows as docx_to_pdf_via_html
+        PDF_AVAILABLE = True
+        PDF_METHOD = "docx2pdf"
+    except ImportError:
+        docx_to_pdf_via_html = None
 
 
 def generate_cv_from_markdown(
@@ -141,14 +157,27 @@ def generate_cv_from_markdown(
         print("📄 Step 4: Generating PDF")
         print(f"   Output: {output_pdf}")
 
-        try:
-            pdf_path = docx_to_pdf_via_html(str(output_docx), str(output_pdf))
-            result['pdf'] = pdf_path
-            print(f"   ✅ PDF created")
-        except Exception as e:
-            print(f"   ⚠️  PDF generation failed: {e}")
-            print(f"   ℹ️  DOCX is still available at: {output_docx}")
-            result['pdf_error'] = str(e)
+        if not PDF_AVAILABLE:
+            print(f"   ⚠️  PDF generation not available on this system")
+            print(f"   ℹ️  Reason: {PDF_ERROR[:100]}")
+            print(f"\n   💡 Options:")
+            print(f"      1. Use --skip-pdf flag to only generate DOCX")
+            print(f"      2. On Windows: Install docx2pdf (requires MS Word)")
+            print(f"         pip install docx2pdf")
+            print(f"      3. On Linux/Mac: Install GTK libraries for WeasyPrint")
+            print(f"      4. Convert DOCX to PDF manually using Word/LibreOffice")
+            print(f"\n   ✅ DOCX file created successfully: {output_docx}")
+            result['pdf_error'] = 'PDF generation not available'
+        else:
+            try:
+                print(f"   Method: {PDF_METHOD}")
+                pdf_path = docx_to_pdf_via_html(str(output_docx), str(output_pdf))
+                result['pdf'] = pdf_path
+                print(f"   ✅ PDF created")
+            except Exception as e:
+                print(f"   ⚠️  PDF generation failed: {e}")
+                print(f"   ℹ️  DOCX is still available at: {output_docx}")
+                result['pdf_error'] = str(e)
 
     # Summary
     print()
