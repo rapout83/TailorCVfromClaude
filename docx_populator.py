@@ -35,23 +35,26 @@ class DOCXPopulator:
         if not text:
             return text
 
-        # Remove markdown syntax
+        # Remove markdown syntax (order matters!)
         text = re.sub(r'\*\*\*(.+?)\*\*\*', r'\1', text)  # Bold italic
         text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)      # Bold
         text = re.sub(r'\*(.+?)\*', r'\1', text)          # Italic
         text = re.sub(r'___(.+?)___', r'\1', text)        # Bold italic
         text = re.sub(r'__(.+?)__', r'\1', text)          # Bold
         text = re.sub(r'_(.+?)_', r'\1', text)            # Italic
-        text = re.sub(r'###\s+', '', text)                # H3
-        text = re.sub(r'##\s+', '', text)                 # H2
-        text = re.sub(r'#\s+', '', text)                  # H1
-        text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)  # Links
-        text = re.sub(r'`(.+?)`', r'\1', text)           # Code
+        text = re.sub(r'###\s*', '', text)                # H3 (allow no space)
+        text = re.sub(r'##\s*', '', text)                 # H2 (allow no space)
+        text = re.sub(r'#\s*', '', text)                  # H1 (allow no space)
+        text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)   # Links
+        text = re.sub(r'`(.+?)`', r'\1', text)            # Code
+
+        # Clean up multiple spaces
+        text = re.sub(r'\s+', ' ', text)
 
         return text.strip()
 
     def _extract_bold_text(self, text: str) -> List[Tuple[str, bool]]:
-        """Extract text with bold formatting info"""
+        """Extract text with bold formatting info, preserving spaces"""
         if not text:
             return [(text, False)]
 
@@ -59,10 +62,14 @@ class DOCXPopulator:
         parts = []
         last_end = 0
 
-        for match in re.finditer(r'\*\*(.+?)\*\*', text):
+        for match in re.finditer(r'\*\*([^*]+?)\*\*', text):
             # Add text before bold
             if match.start() > last_end:
-                parts.append((text[last_end:match.start()], False))
+                before_text = text[last_end:match.start()]
+                # Clean markdown but preserve spaces
+                before_text = re.sub(r'###\s*', '', before_text)
+                if before_text:
+                    parts.append((before_text, False))
             # Add bold text
             parts.append((match.group(1), True))
             last_end = match.end()
@@ -71,18 +78,29 @@ class DOCXPopulator:
         if last_end < len(text):
             remaining = text[last_end:]
             # Clean any remaining markdown
-            remaining = self._clean_markdown(remaining)
+            remaining = re.sub(r'###\s*', '', remaining)
             if remaining:
                 parts.append((remaining, False))
 
         # If no bold patterns found, return cleaned text
         if not parts:
-            return [(self._clean_markdown(text), False)]
+            cleaned = self._clean_markdown(text)
+            return [(cleaned, False)] if cleaned else []
 
         return parts
 
+    def _add_bullet_formatting(self, para):
+        """Add bullet point formatting to a paragraph"""
+        from docx.oxml import parse_xml
+        from docx.oxml.ns import nsdecls
+
+        # Add numbering/bullet formatting
+        pPr = para._element.get_or_add_pPr()
+        numPr = parse_xml(r'<w:numPr %s><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>' % nsdecls('w'))
+        pPr.insert(0, numPr)
+
     def _add_paragraph_with_formatting(self, index: int, text: str, style_name='Normal', is_bullet=False):
-        """Add paragraph with proper formatting and bold preservation"""
+        """Add paragraph with proper formatting, Calibri 10, and bullets"""
         # Get text parts with bold info
         parts = self._extract_bold_text(text)
 
@@ -95,11 +113,22 @@ class DOCXPopulator:
             p.addnext(new_p)
             para = self.doc.paragraphs[index + 1]
 
+        # Add bullet formatting if needed
+        if is_bullet:
+            try:
+                self._add_bullet_formatting(para)
+            except Exception:
+                # If bullet formatting fails, at least keep the text
+                pass
+
         # Add text with formatting
         for text_part, is_bold in parts:
             if text_part:
                 run = para.add_run(text_part)
                 run.bold = is_bold
+                # Set font to Calibri 10
+                run.font.name = 'Calibri'
+                run.font.size = Pt(10)
 
         return para
 
