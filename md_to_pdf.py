@@ -44,6 +44,8 @@ class PDFStyleConfig:
 
             "tagline_color": None,  # Color for tagline (first line after name)
             "tagline_background": None,  # Background for tagline (second line)
+            "tagline_margin_top": "0em",  # Space above tagline (set to 0 for tight spacing)
+            "tagline_margin_bottom": "0.5em",  # Space below tagline
 
             "heading2_family": "Calibri, Arial, sans-serif",
             "heading2_size": "12pt",
@@ -203,7 +205,8 @@ class PDFStyleConfig:
         h1 + p {{
             text-align: center;
             font-weight: bold;
-            margin-bottom: 0.5em;
+            margin-top: {s['fonts']['tagline_margin_top']};
+            margin-bottom: {s['fonts']['tagline_margin_bottom']};
             {f"color: {s['fonts']['tagline_color']};" if s['fonts']['tagline_color'] else ""}
             {f"background-color: {s['fonts']['tagline_background']};" if s['fonts']['tagline_background'] else ""}
             {f"padding: 0.3em 0.5em;" if s['fonts']['tagline_background'] else ""}

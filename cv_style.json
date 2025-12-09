@@ -19,6 +19,8 @@
     "heading1_background": null,
     "tagline_color": null,
     "tagline_background": null,
+    "tagline_margin_top": "0em",
+    "tagline_margin_bottom": "0.5em",
     "heading2_family": "Calibri, Arial, sans-serif",
     "heading2_size": "12pt",
     "heading2_color": "#000000",
