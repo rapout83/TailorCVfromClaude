@@ -1,0 +1,49 @@
+{
+  "page": {
+    "size": "A4",
+    "margin_top": "2cm",
+    "margin_bottom": "2cm",
+    "margin_left": "2cm",
+    "margin_right": "2cm"
+  },
+  "fonts": {
+    "body_family": "Calibri, Arial, sans-serif",
+    "body_size": "10pt",
+    "body_color": "#000000",
+    "body_line_height": "1.4",
+    "heading1_family": "Calibri, Arial, sans-serif",
+    "heading1_size": "18pt",
+    "heading1_color": "#000000",
+    "heading1_weight": "bold",
+    "heading2_family": "Calibri, Arial, sans-serif",
+    "heading2_size": "12pt",
+    "heading2_color": "#000000",
+    "heading2_weight": "bold",
+    "heading3_family": "Calibri, Arial, sans-serif",
+    "heading3_size": "11pt",
+    "heading3_color": "#000000",
+    "heading3_weight": "bold"
+  },
+  "spacing": {
+    "paragraph_spacing": "0.3em",
+    "heading1_margin_top": "0.5em",
+    "heading1_margin_bottom": "0.3em",
+    "heading2_margin_top": "0.8em",
+    "heading2_margin_bottom": "0.4em",
+    "heading3_margin_top": "0.6em",
+    "heading3_margin_bottom": "0.3em",
+    "list_spacing": "0.2em"
+  },
+  "lists": {
+    "bullet_style": "disc",
+    "bullet_color": "#000000",
+    "indent": "1.5em"
+  },
+  "horizontal_rule": {
+    "display": "none"
+  },
+  "bold": {
+    "weight": "bold",
+    "color": null
+  }
+}
