@@ -120,6 +120,8 @@ class PDFStyleConfig:
             line-height: {s['fonts']['body_line_height']};
             margin: 0;
             padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }}
 
         /* Headings */
@@ -281,11 +283,24 @@ class MarkdownToPDF:
         try:
             from playwright.sync_api import sync_playwright
 
+            # Extract margin settings from style config
+            margins = self.style_config.style['page']
+
             with sync_playwright() as p:
                 browser = p.chromium.launch()
                 page = browser.new_page()
                 page.set_content(full_html)
-                page.pdf(path=str(output_pdf), format='A4')
+                page.pdf(
+                    path=str(output_pdf),
+                    format='A4',
+                    margin={
+                        'top': margins['margin_top'],
+                        'bottom': margins['margin_bottom'],
+                        'left': margins['margin_left'],
+                        'right': margins['margin_right'],
+                    },
+                    print_background=True,  # Ensure backgrounds/colors print
+                )
                 browser.close()
 
             print(f"   ✅ PDF created successfully! (Playwright)")
