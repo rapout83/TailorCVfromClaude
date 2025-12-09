@@ -42,6 +42,9 @@ class PDFStyleConfig:
             "heading1_weight": "bold",
             "heading1_background": None,  # Background color for H1
 
+            "tagline_color": None,  # Color for tagline (first line after name)
+            "tagline_background": None,  # Background for tagline (second line)
+
             "heading2_family": "Calibri, Arial, sans-serif",
             "heading2_size": "12pt",
             "heading2_color": "#000000",
@@ -196,11 +199,14 @@ class PDFStyleConfig:
             margin: {s['horizontal_rule']['margin']};
         }}
 
-        /* First paragraph after heading (summary) */
+        /* Tagline (first paragraph after name) */
         h1 + p {{
             text-align: center;
             font-weight: bold;
             margin-bottom: 0.5em;
+            {f"color: {s['fonts']['tagline_color']};" if s['fonts']['tagline_color'] else ""}
+            {f"background-color: {s['fonts']['tagline_background']};" if s['fonts']['tagline_background'] else ""}
+            {f"padding: 0.3em 0.5em;" if s['fonts']['tagline_background'] else ""}
         }}
 
         /* Second paragraph (tagline/summary) */
