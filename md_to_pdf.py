@@ -72,7 +72,10 @@ class PDFStyleConfig:
 
         # Other elements
         "horizontal_rule": {
-            "display": "none",  # Hide --- separators
+            "display": "block",
+            "border": "none",
+            "border_top": "1px solid #cccccc",
+            "margin": "1em 0",
         },
 
         "bold": {
@@ -175,6 +178,9 @@ class PDFStyleConfig:
         /* Horizontal rules */
         hr {{
             display: {s['horizontal_rule']['display']};
+            border: {s['horizontal_rule']['border']};
+            border-top: {s['horizontal_rule']['border_top']};
+            margin: {s['horizontal_rule']['margin']};
         }}
 
         /* First paragraph after heading (summary) */
@@ -270,22 +276,48 @@ class MarkdownToPDF:
 
         # Convert to PDF
         print(f"   ✓ Generating PDF...")
+
+        # Try Playwright first (works great on Windows)
+        try:
+            from playwright.sync_api import sync_playwright
+
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                page = browser.new_page()
+                page.set_content(full_html)
+                page.pdf(path=str(output_pdf), format='A4')
+                browser.close()
+
+            print(f"   ✅ PDF created successfully! (Playwright)")
+            return str(output_pdf)
+
+        except ImportError:
+            print(f"   ℹ️  Playwright not installed, trying WeasyPrint...")
+        except Exception as e:
+            print(f"   ⚠️  Playwright failed: {e}")
+            print(f"   ℹ️  Trying WeasyPrint...")
+
+        # Try WeasyPrint as fallback (works on Linux/Mac)
         try:
             from weasyprint import HTML
             HTML(string=full_html).write_pdf(output_pdf)
-            print(f"   ✅ PDF created successfully!")
+            print(f"   ✅ PDF created successfully! (WeasyPrint)")
+            return str(output_pdf)
+
         except (ImportError, OSError) as e:
-            # Fallback: save HTML for manual conversion
+            # Last resort: save HTML for manual conversion
             html_path = output_pdf.with_suffix('.html')
             with open(html_path, 'w', encoding='utf-8') as f:
                 f.write(full_html)
 
-            print(f"   ⚠️  WeasyPrint not available")
+            print(f"   ⚠️  No PDF library available")
             print(f"   ℹ️  HTML saved to: {html_path}")
-            print(f"   💡 You can:")
+            print(f"\n   💡 Install Playwright for automated PDF:")
+            print(f"      pip install playwright")
+            print(f"      playwright install chromium")
+            print(f"\n   Or manually:")
             print(f"      1. Open HTML in browser and print to PDF")
-            print(f"      2. Install WeasyPrint: pip install weasyprint")
-            print(f"      3. Use online HTML to PDF converter")
+            print(f"      2. Use online HTML to PDF converter")
 
             return str(html_path)
 
