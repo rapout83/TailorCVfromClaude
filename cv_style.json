@@ -11,18 +11,22 @@
     "body_size": "10pt",
     "body_color": "#000000",
     "body_line_height": "1.4",
+    "body_background": null,
     "heading1_family": "Calibri, Arial, sans-serif",
     "heading1_size": "18pt",
     "heading1_color": "#000000",
     "heading1_weight": "bold",
+    "heading1_background": null,
     "heading2_family": "Calibri, Arial, sans-serif",
     "heading2_size": "12pt",
     "heading2_color": "#000000",
     "heading2_weight": "bold",
+    "heading2_background": null,
     "heading3_family": "Calibri, Arial, sans-serif",
     "heading3_size": "11pt",
     "heading3_color": "#000000",
-    "heading3_weight": "bold"
+    "heading3_weight": "bold",
+    "heading3_background": null
   },
   "spacing": {
     "paragraph_spacing": "0.3em",
@@ -40,7 +44,10 @@
     "indent": "1.5em"
   },
   "horizontal_rule": {
-    "display": "none"
+    "display": "block",
+    "border": "none",
+    "border_top": "1px solid #cccccc",
+    "margin": "1em 0"
   },
   "bold": {
     "weight": "bold",

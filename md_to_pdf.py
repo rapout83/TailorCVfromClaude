@@ -34,21 +34,25 @@ class PDFStyleConfig:
             "body_size": "10pt",
             "body_color": "#000000",
             "body_line_height": "1.4",
+            "body_background": None,  # None = no background, or use hex like "#f5f5f5"
 
             "heading1_family": "Calibri, Arial, sans-serif",
             "heading1_size": "18pt",
             "heading1_color": "#000000",
             "heading1_weight": "bold",
+            "heading1_background": None,  # Background color for H1
 
             "heading2_family": "Calibri, Arial, sans-serif",
             "heading2_size": "12pt",
             "heading2_color": "#000000",
             "heading2_weight": "bold",
+            "heading2_background": None,  # Background color for H2 (section headers)
 
             "heading3_family": "Calibri, Arial, sans-serif",
             "heading3_size": "11pt",
             "heading3_color": "#000000",
             "heading3_weight": "bold",
+            "heading3_background": None,  # Background color for H3
         },
 
         # Spacing
@@ -118,6 +122,7 @@ class PDFStyleConfig:
             font-size: {s['fonts']['body_size']};
             color: {s['fonts']['body_color']};
             line-height: {s['fonts']['body_line_height']};
+            {f"background-color: {s['fonts']['body_background']};" if s['fonts']['body_background'] else ""}
             margin: 0;
             padding: 0;
             -webkit-print-color-adjust: exact;
@@ -130,6 +135,8 @@ class PDFStyleConfig:
             font-size: {s['fonts']['heading1_size']};
             color: {s['fonts']['heading1_color']};
             font-weight: {s['fonts']['heading1_weight']};
+            {f"background-color: {s['fonts']['heading1_background']};" if s['fonts']['heading1_background'] else ""}
+            {f"padding: 0.3em 0.5em;" if s['fonts']['heading1_background'] else ""}
             margin-top: {s['spacing']['heading1_margin_top']};
             margin-bottom: {s['spacing']['heading1_margin_bottom']};
             text-align: center;
@@ -140,6 +147,8 @@ class PDFStyleConfig:
             font-size: {s['fonts']['heading2_size']};
             color: {s['fonts']['heading2_color']};
             font-weight: {s['fonts']['heading2_weight']};
+            {f"background-color: {s['fonts']['heading2_background']};" if s['fonts']['heading2_background'] else ""}
+            {f"padding: 0.2em 0.5em;" if s['fonts']['heading2_background'] else ""}
             margin-top: {s['spacing']['heading2_margin_top']};
             margin-bottom: {s['spacing']['heading2_margin_bottom']};
             text-transform: uppercase;
@@ -150,6 +159,8 @@ class PDFStyleConfig:
             font-size: {s['fonts']['heading3_size']};
             color: {s['fonts']['heading3_color']};
             font-weight: {s['fonts']['heading3_weight']};
+            {f"background-color: {s['fonts']['heading3_background']};" if s['fonts']['heading3_background'] else ""}
+            {f"padding: 0.2em 0.5em;" if s['fonts']['heading3_background'] else ""}
             margin-top: {s['spacing']['heading3_margin_top']};
             margin-bottom: {s['spacing']['heading3_margin_bottom']};
         }}
