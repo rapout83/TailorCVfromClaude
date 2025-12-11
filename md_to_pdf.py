@@ -187,6 +187,18 @@ class PDFStyleConfig:
             {f"color: {s['lists']['bullet_color']};" if s['lists']['bullet_color'] else ""}
         }}
 
+        /* Nested lists */
+        ul ul {{
+            margin: 0.2em 0;
+            padding-left: 2em;
+            list-style-type: circle;  /* Different bullet for sub-items */
+        }}
+
+        ul ul li {{
+            margin: 0.1em 0;
+            font-size: 0.95em;  /* Slightly smaller for sub-items */
+        }}
+
         /* Bold */
         strong, b {{
             font-weight: {s['bold']['weight']};
