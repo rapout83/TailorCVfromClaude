@@ -10,6 +10,7 @@ Converts markdown CV to beautifully formatted PDF with customizable:
 """
 
 import markdown
+import re
 from pathlib import Path
 from typing import Dict, Optional
 import json
