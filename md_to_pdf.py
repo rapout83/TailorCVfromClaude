@@ -284,16 +284,27 @@ class MarkdownToPDF:
             md_content = f.read()
 
         # Normalize indentation: convert 2-space indents to 4-space (for nested lists)
-        # This makes it compatible with Claude's markdown output
+        # Also add blank lines before lists if missing
         lines = md_content.split('\n')
         normalized_lines = []
-        for line in lines:
-            # Check if line starts with 2 spaces followed by a bullet
+        for i, line in enumerate(lines):
+            # Add current line
             if re.match(r'^  [-*]', line):
-                # Convert 2-space indent to 4-space
-                normalized_lines.append('  ' + line)  # Add 2 more spaces
+                # Nested bullet - convert 2-space indent to 4-space
+                normalized_lines.append('  ' + line)
             else:
                 normalized_lines.append(line)
+
+            # Check if next line is a list item and current line is not blank/list
+            if i < len(lines) - 1:
+                next_line = lines[i + 1]
+                # If next line is a bullet point and current line is not blank and not a list item
+                if (re.match(r'^[-*]\s', next_line) and
+                    line.strip() and
+                    not re.match(r'^[-*]\s', line)):
+                    # Add blank line before the list
+                    normalized_lines.append('')
+
         md_content = '\n'.join(normalized_lines)
 
         # Convert markdown to HTML
